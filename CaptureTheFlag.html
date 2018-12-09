@@ -1,0 +1,89 @@
+<html>
+
+<script>
+
+var isPlayerOneTurn = true;
+
+function positionOf(obj){
+	return {
+		left: parseInt(obj.style.left.replace('px','')),
+		top: parseInt(obj.style.top.replace('px',''))
+	}
+}
+
+function collides(obj1, obj2){
+	return (obj1.top <= obj2.top+80 && obj1.top >= obj2.top-80 && obj1.left <= obj2.left+80 && obj1.left >= obj2.left - 80);
+}
+
+window.onkeydown = function(e){
+	var moveX = 0;
+	var moveY = 0;
+
+	switch (e.key){
+		case 'ArrowUp':
+			moveY = -80;
+			break;
+		case 'ArrowDown':
+			moveY = 80;
+			break;
+		case 'ArrowLeft':
+			moveX = -80;
+			break;
+		case 'ArrowRight':
+			moveX = 80;
+			break;
+	}
+
+	var playerDiv = document.getElementById(isPlayerOneTurn ? 'player1' : 'player2');
+	var playerPos = positionOf(playerDiv);
+	playerPos.left += moveX;
+	playerPos.top += moveY;
+
+	playerDiv.style.left = playerPos.left + 'px';
+	playerDiv.style.top = playerPos.top + 'px';
+
+	var opponent = positionOf(document.getElementById(isPlayerOneTurn ? 'player2' : 'player1'));
+	if (collides(playerPos,opponent)){
+		document.getElementById('referee').innerHTML = ((isPlayerOneTurn ? 'Player 2' : 'Player 1') + ' is OUT!');
+	}
+
+	var opponentFlag = document.getElementById(isPlayerOneTurn ? 'flag2' : 'flag1');
+	if (collides(playerPos,positionOf(opponentFlag))){
+		playerDiv.firstElementChild.src = playerDiv.firstElementChild.src.replace('.png','') + 'WithFlag.png';
+		opponentFlag.style.display = 'none';
+	}
+
+	var playerCone = document.getElementById(isPlayerOneTurn ? 'cone1' : 'cone2');
+	if (collides(playerPos,positionOf(playerCone)) && playerDiv.firstElementChild.src.indexOf('WithFlag') > 0){
+		document.getElementById('referee').innerHTML = ((isPlayerOneTurn ? 'Player 1' : 'Player 2') + ' WINS');
+	}
+
+	isPlayerOneTurn = !isPlayerOneTurn;
+}
+
+</script>
+
+<body>
+	<img src="field.png"/>
+	<div id="referee" style="z-index:100; position:absolute; top:650px; left:400px; font-size:40px; font-family:tahoma"></div>
+	<div id="flag1" style="position:absolute; left:20px; top:250px;">
+		<img src="flag1.png"/>
+	</div>
+	<div id="cone1" style="position:absolute; left:20px; top:310px;">
+		<img src="cone.png"/>
+	</div>
+	<div id="flag2" style="position:absolute; left:900px; top:250px;">
+		<img src="flag2.png"/>
+	</div>
+	<div id="cone2" style="position:absolute; left:917px; top:310px;">
+		<img src="cone.png"/>
+	</div>
+	<div id="player1" style="position:absolute; left:100px; top:250px;">
+		<img src="player1.png"/>
+	</div>
+	<div id="player2" style="position:absolute; left:800px; top:250px;">
+		<img src="player2.png"/>
+	</div>
+</body>
+
+</html>
